@@ -1,0 +1,434 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.schemastore.org/zola.json",
+  "$defs": {
+    "TaxonomyConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "name": {
+          "type": "string",
+          "default": "",
+          "description": "The name used in the URL, usually the plural"
+        },
+        "slug": {
+          "type": "string",
+          "default": "",
+          "description": "The slug according to the config slugification strategy"
+        },
+        "paginate_by": {
+          "type": "number",
+          "default": "",
+          "description": "If this is set, the list of individual taxonomy term page will be paginated by this much"
+        },
+        "paginate_path": {
+          "type": "string",
+          "default": "",
+          "description": "If this is set, the list of individual taxonomy term page will be paginated by this much"
+        },
+        "render": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the taxonomy will be rendered, defaults to `true`"
+        },
+        "feed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to generate a feed only for each taxonomy term, defaults to `false`"
+        }
+      }
+    },
+    "Search": {
+      "type": "object",
+      "required": [],
+      "additionalProperties": false,
+      "properties": {
+        "include_title": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to include the title of the page/section in the index"
+        },
+        "include_description": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to include the description of the page/section in the index"
+        },
+        "include_date": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to include the RFC3339 datetime of the page in the search index"
+        },
+        "include_path": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to include the path of the page/section in the index (the permalink is always included)"
+        },
+        "include_content": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to include the rendered content of the page/section in the index"
+        },
+        "index_format": {
+          "type": "string",
+          "enum": [
+            "elasticlunr_javascript",
+            "elasticlunr_json",
+            "fuse_javascript",
+            "fuse_json"
+          ],
+          "default": "elasticlunr_javascript",
+          "description": "Whether to produce the search index as a javascript file or as a JSON file"
+        },
+        "truncate_content_length": {
+          "type": "number",
+          "description": "Optionally truncate the content down to `n` code points. This might cut content in a word"
+        }
+      }
+    },
+    "Translations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "propertyNames": { "type": "string" },
+      "description": "Optional translation object for the default language\nExample:```default_language = \"fr\"\n\n[translations]\n\ntitle = \"Un titre\"```"
+    }
+  },
+  "title": "Zola Configuration",
+  "type": "object",
+  "required": ["base_url"],
+  "additionalProperties": false,
+  "properties": {
+    "base_url": {
+      "type": "string",
+      "default": "https://mywebsite.com",
+      "description": "The base URL of the site; the only required configuration variable."
+    },
+    "title": {
+      "type": "string",
+      "default": "",
+      "description": "The site title; used in feeds by default."
+    },
+    "description": {
+      "type": "string",
+      "default": "",
+      "description": "The site description; used in feeds by default."
+    },
+    "default_language": {
+      "type": "string",
+      "default": "en",
+      "description": "The default language; used in feeds."
+    },
+    "theme": {
+      "type": "string",
+      "description": "The site theme to use."
+    },
+    "output_dir": {
+      "type": "string",
+      "description": "For overriding the default output directory `public`, set it to another value (e.g.: \"docs\")"
+    },
+    "preserve_dotfiles_in_output": {
+      "type": "boolean",
+      "description": "Whether dotfiles at the root level of the output directory are preserved when (re)building the site. \nEnabling this also prevents the deletion of the output folder itself on rebuilds."
+    },
+    "compile_sass": {
+      "type": "boolean",
+      "description": " When set to \"true\", the Sass files in the `sass` directory in the site root are compiled. \nSass files in theme directories are always compiled."
+    },
+    "minify_html": {
+      "type": "boolean",
+      "description": "When set to \"true\", the generated HTML files are minified."
+    },
+    "ignored_content": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Glob pattern, e.g. '**/*.tmp' or 'temp.*'"
+      },
+      "description": "A list of glob patterns specifying asset files to ignore when the content\ndirectory is processed. Defaults to none, which means that all asset files are\ncopied over to the `public` directory.\nExample:\nignored_content = [\"*.{graphml,xlsx}\", \"temp.*\", \"**/build_folder\"]"
+    },
+    "ignored_static": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Similar to ignored_content, a list of glob patterns specifying asset files to ignore when the static directory is processed. Defaults to none, which means that all asset files are copied over to the `public` directory"
+    },
+    "generate_feeds": {
+      "type": "boolean",
+      "description": "When set to \"true\", a feed is automatically generated."
+    },
+    "exclude_paginated_pages_in_sitemap": {
+      "type": "string",
+      "enum": ["none", "all"],
+      "default": " When set to \"all\", paginated pages are not a part of the sitemap, default is \"none\""
+    },
+    "feed_filenames": {
+      "type": "array",
+      "default": ["atom.xml"],
+      "items": {
+        "type": "string"
+      },
+      "description": "The filenames to use for the feeds. Used as the template filenames, too.\nDefaults to [\"atom.xml\"], which has a built-in template that renders an Atom 1.0 feed.\nThere is also a built-in template \"rss.xml\" that renders an RSS 2.0 feed."
+    },
+    "feed_limit": {
+      "type": "number",
+      "description": "The number of articles to include in the feed. All items are included if this limit is not set (the default)."
+    },
+    "hard_link_static": {
+      "type": "boolean",
+      "default": "false",
+      "description": "When set to \"true\", files in the `static` directory are hard-linked. Useful for large static files. Note that for this to work, both `static` and the output directory need to be on the same filesystem. Note that the theme's `static` files are always copied, regardless of this setting."
+    },
+    "author": {
+      "type": "string",
+      "description": "The default author for pages"
+    },
+    "taxonomies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/TaxonomyConfig"
+      },
+      "description": "The taxonomies to be rendered for the site and their configuration of the default languages"
+    },
+    "build_search_index": {
+      "type": "boolean",
+      "description": "When set to \"true\", a search index is built from the pages and section content for `default_language`."
+    },
+    "generate_sitemap": {
+      "type": "boolean",
+      "description": "When set to \"false\", Sitemap.xml is not generated"
+    },
+    "generate_robots_txt": {
+      "type": "boolean",
+      "description": "hen set to \"false\", robots.txt is not generated"
+    },
+    "markdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "highlight_code": {
+          "type": "boolean",
+          "default": false,
+          "description": "When set to \"true\", all code blocks are highlighted."
+        },
+        "error_on_missing_highlight": {
+          "type": "boolean",
+          "description": "When set to \"true\", missing highlight languages are treated as errors. Defaults to false."
+        },
+        "extra_syntaxes_and_themes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "When set to \"true\", missing highlight languages are treated as errors. Defaults to false."
+        },
+        "highlight_theme": {
+          "type": "string",
+          "description": "The theme to use for code highlighting."
+        },
+        "highlight_themes_css": {
+          "type": "array",
+
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["theme", "filename"],
+            "properties": {
+              "theme": {
+                "type": "string"
+              },
+              "filename": {
+                "type": "string"
+              }
+            },
+
+            "description": "Generate CSS files for Themes out of syntect"
+          }
+        },
+        "render_emoji": {
+          "type": "boolean",
+          "default": false,
+          "description": "# When set to \"true\", emoji aliases translated to their corresponding Unicode emoji equivalent in the rendered Markdown files. (e.g.: :smile: => 😄)"
+        },
+        "external_links_class": {
+          "type": "string",
+          "description": "CSS class to add to external links (e.g. \"external-link\")"
+        },
+        "external_links_target_blank": {
+          "type": "boolean",
+          "description": "Whether external links are to be opened in a new tab\nIf this is true, a `rel=\"noopener\"` will always automatically be added for security reasons"
+        },
+        "external_links_no_follow": {
+          "type": "boolean",
+          "description": "Whether to set rel=\"nofollow\" for all external links"
+        },
+        "external_links_no_referrer": {
+          "type": "boolean",
+          "description": "Whether to set rel=\"noreferrer\" for all external links"
+        },
+        "smart_punctuation": {
+          "type": "boolean",
+          "description": " Whether smart punctuation is enabled (changing quotes, dashes, dots in their typographic form)\nFor example, `...` into `…`, `\"quote\"` into `“curly”` etc"
+        },
+        "definition_list": {
+          "type": "boolean",
+          "description": "Whether parsing of definition lists is enabled"
+        },
+        "lazy_async_image": {
+          "type": "boolean",
+          "description": "Whether to set decoding=\"async\" and loading=\"lazy\" for all images\nWhen turned on, the alt text must be plain text.\nFor example, `![xx](...)` is ok but `![*x*x](...)` isn’t ok"
+        },
+        "bottom_footnotes": {
+          "type": "boolean",
+          "description": "Whether footnotes are rendered in the GitHub-style (at the bottom, with back references) or plain (in the place, where they are defined)"
+        },
+        "insert_anchor_links": {
+          "type": "string",
+          "enum": ["left", "right", "heading", "none"],
+          "description": "This determines whether to insert a link for each header like the ones you can see on this site if you hover over a header.\nThe default template can be overridden by creating an `anchor-link.html` file in the `templates` directory.\nThis value can be \"left\", \"right\", \"heading\" or \"none\".\n\"heading\" means the full heading becomes the text of the anchor.\nSee \"Internal links & deep linking\" in the documentation for more information."
+        },
+        "github_alerts": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to enable GitHub-style alerts"
+        }
+      }
+    },
+    "link_checker": {
+      "type": "object",
+      "required": [],
+      "additionalProperties": false,
+      "properties": {
+        "skip_prefixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Skip link checking for external URLs that start with these prefixes"
+        },
+        "skip_anchor_prefixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Skip anchor checking for external URLs that start with these prefixes"
+        },
+        "internal_level": {
+          "type": "string",
+          "enum": ["error", "warn"],
+          "default": "error",
+          "description": "Treat internal link problems as either \"error\" or \"warn\", default is \"error\""
+        },
+        "external_level": {
+          "type": "string",
+          "enum": ["error", "warn"],
+          "default": "error",
+          "description": "Treat external link problems as either \"error\" or \"warn\", default is \"error\""
+        },
+        "ignore_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of file glob patterns to skip link checking on"
+        }
+      }
+    },
+    "slugify": {
+      "type": "object",
+      "required": [],
+      "additionalProperties": false,
+      "properties": {
+        "paths": {
+          "type": "string",
+          "enum": ["on", "safe", "off"],
+          "default": "on"
+        },
+        "taxonomies": {
+          "type": "string",
+          "enum": ["on", "safe", "off"],
+          "default": "on"
+        },
+        "anchors": {
+          "type": "string",
+          "enum": ["on", "safe", "off"],
+          "default": "on"
+        },
+        "paths_keep_dates": {
+          "type": "boolean",
+          "default": false,
+          "description": " Whether to remove date prefixes for page path slugs.\nFor example, content/posts/2016-10-08_a-post-with-dates.md => posts/a-post-with-dates\nWhen true, content/posts/2016-10-08_a-post-with-dates.md => posts/2016-10-08-a-post-with-dates"
+        }
+      }
+    },
+    "search": {
+      "$ref": "#/$defs/Search"
+    },
+    "translations": {
+      "$ref": "#/$defs/Translations"
+    },
+    "languages": {
+      "type": "object",
+      "required": [],
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [],
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "default": "",
+            "description": "The site title; used in feeds by default."
+          },
+          "description": {
+            "type": "string",
+            "default": "",
+            "description": "The site description; used in feeds by default."
+          },
+          "generate_feeds": {
+            "type": "boolean",
+            "description": "When set to \"true\", a feed is automatically generated."
+          },
+          "feed_filenames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": ["atom.xml"],
+            "description": "The filenames to use for the feeds. Used as the template filenames, too.\nDefaults to [\"atom.xml\"], which has a built-in template that renders an Atom 1.0 feed.\nThere is also a built-in template \"rss.xml\" that renders an RSS 2.0 feed."
+          },
+          "taxonomies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/TaxonomyConfig"
+            },
+            "description": "The taxonomies to be rendered for the site and their configuration of the default languages"
+          },
+          "build_search_index": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to generate search index for that language, defaults to `false`"
+          },
+          "search": {
+            "$ref": "#/$defs/Search"
+          },
+          "translations": {
+            "$ref": "#/$defs/Translations"
+          }
+        }
+      }
+    },
+    "extra": {
+      "type": "object",
+      "required": [],
+      "propertyNames": {"type": "string"},
+      "additionalProperties": {}
+    }
+  }
+}

@@ -8749,6 +8749,14 @@
         "**/destination-*/metadata.yaml"
       ],
       "url": "https://raw.githubusercontent.com/airbytehq/airbyte/refs/heads/master/airbyte-ci/connectors/metadata_service/lib/metadata_service/models/generated/ConnectorMetadataDefinitionV0.json"
+    },
+    {
+      "name": "Zola",
+      "description": "Zola",
+      "fileMatch": [
+        "zola.toml"
+      ],
+      "url": "https://www.schemastore.org/zola.json"
     }
   ]
 }
